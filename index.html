@@ -1,0 +1,320 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Apps</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --fg: #1a1a1a;
+      --muted: #666;
+      --card: #ffffff;
+      --border: #e5e3dc;
+      --accent: #2d6a4f;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #15171a;
+        --fg: #ececec;
+        --muted: #9aa0a6;
+        --card: #1e2125;
+        --border: #2a2e34;
+        --accent: #7bbf9e;
+        --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.25);
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem;
+    }
+    ul.apps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .card {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+    .card:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+    }
+    .card:active {
+      transform: translateY(0);
+      background: color-mix(in srgb, var(--accent) 8%, var(--card));
+    }
+    .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: var(--bg);
+      object-fit: cover;
+    }
+    .meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .name {
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 0 0 0.15rem;
+      letter-spacing: -0.01em;
+    }
+    .desc {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .chev {
+      flex-shrink: 0;
+      color: var(--muted);
+      font-size: 1.2rem;
+    }
+
+    /* Details dialog */
+    dialog#details {
+      border: none;
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--fg);
+      padding: 0;
+      max-width: 440px;
+      width: calc(100% - 2rem);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    }
+    dialog#details::backdrop {
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(2px);
+    }
+    .dlg-body {
+      padding: 1.25rem;
+    }
+    .dlg-head {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .dlg-head img {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      object-fit: cover;
+      background: var(--bg);
+    }
+    .dlg-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.1rem;
+      letter-spacing: -0.01em;
+    }
+    .dlg-author {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .dlg-desc {
+      margin: 0 0 0.85rem;
+      font-size: 0.95rem;
+      color: var(--fg);
+      white-space: pre-wrap;
+    }
+    .dlg-meta {
+      margin: 0 0 1.25rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+    .dlg-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-align: center;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: color-mix(in srgb, var(--accent) 85%, black);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <ul id="apps" class="apps"></ul>
+  </main>
+
+  <dialog id="details" aria-labelledby="dlg-name">
+    <div class="dlg-body">
+      <div class="dlg-head">
+        <img id="dlg-icon" alt="" />
+        <div>
+          <p id="dlg-name" class="dlg-name"></p>
+          <p id="dlg-author" class="dlg-author"></p>
+        </div>
+      </div>
+      <p id="dlg-desc" class="dlg-desc"></p>
+      <p id="dlg-meta" class="dlg-meta"></p>
+      <div class="dlg-actions">
+        <a id="dlg-install" class="btn btn-primary" href="#">Add to chat</a>
+        <a id="dlg-source" class="btn btn-ghost" href="#" target="_blank" rel="noopener">View source code</a>
+        <button id="dlg-close" class="btn btn-ghost" type="button">Cancel</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // Curated list. Add new entries here.
+    const APPS = [
+      {
+        name: "Word Challenge",
+        author: "trosel",
+        icon: "data:image/png;base64,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",
+        short: "Wordle-style puzzle for groups.",
+        description: "A Wordle-style puzzle, but every app generates its own unique challenge from a random seed, so no spoilers across chats.\n\nThe leaderboard only notifies the group when someone takes first place. Result grids are included, and you can see when other people in the chat are solving or viewing the leaderboard.\n\n4,783 possible guesses, 2,309 possible answers (slurs removed).",
+        version: "0.1.0",
+        size: "~30 KB",
+        source: "https://github.com/trosel/webxdc-word-challenge",
+        url: "https://github.com/trosel/webxdc-word-challenge/releases/download/0.1.0/webxdc-word-challenge.xdc"
+      },
+      {
+        name: "Plan",
+        author: "trosel",
+        icon: "data:image/png;base64,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",
+        short: "Simple event planning for groups.",
+        description: "A casual event planner for group chats. Simpler than a full calendar app.\n\nVote on the day and time (the creator can lock it in once you've settled). RSVPs inherit from the time votes. Optional notifications for RSVPs and time changes, and a real-time presence indicator so you can see who else is on the page.\n\nOptional potluck-style 'bringing' list.",
+        version: "0.3.0",
+        size: "~24 KB",
+        source: "https://github.com/trosel/webxdc-plan",
+        url: "https://github.com/trosel/webxdc-plan/releases/download/0.3.0/webxdc-plan.xdc"
+      }
+    ];
+
+    const list = document.getElementById("apps");
+    const dlg = document.getElementById("details");
+    const dlgIcon = document.getElementById("dlg-icon");
+    const dlgName = document.getElementById("dlg-name");
+    const dlgAuthor = document.getElementById("dlg-author");
+    const dlgDesc = document.getElementById("dlg-desc");
+    const dlgMeta = document.getElementById("dlg-meta");
+    const dlgInstall = document.getElementById("dlg-install");
+    const dlgSource = document.getElementById("dlg-source");
+    const dlgClose = document.getElementById("dlg-close");
+
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+
+    function openDetails(app) {
+      dlgIcon.src = app.icon;
+      dlgIcon.onerror = () => { dlgIcon.style.visibility = "hidden"; };
+      dlgIcon.style.visibility = "visible";
+      dlgName.textContent = app.name;
+      dlgAuthor.textContent = "by " + app.author;
+      dlgDesc.textContent = app.description;
+      const metaParts = [];
+      if (app.version) metaParts.push(`v${app.version}`);
+      if (app.size) metaParts.push(app.size);
+      dlgMeta.textContent = metaParts.join(" · ");
+      dlgInstall.href = app.url;
+      dlgSource.href = app.source;
+      dlgSource.hidden = !app.source;
+      if (typeof dlg.showModal === "function") {
+        dlg.showModal();
+      } else {
+        dlg.setAttribute("open", "");
+      }
+    }
+
+    function closeDetails() {
+      if (dlg.open) dlg.close();
+    }
+
+    dlgClose.addEventListener("click", closeDetails);
+    // Close when clicking the backdrop (outside the dialog body).
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg) closeDetails();
+    });
+    // Close the dialog once the user has tapped "Add to chat" so we
+    // don't sit on a stale modal after the .xdc download fires.
+    dlgInstall.addEventListener("click", () => {
+      setTimeout(closeDetails, 0);
+    });
+
+    for (const app of APPS) {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <button class="card" type="button">
+          <img class="icon" src="${esc(app.icon)}" alt="" />
+          <div class="meta">
+            <p class="name">${esc(app.name)}</p>
+            <p class="desc">${esc(app.short)}</p>
+          </div>
+          <span class="chev" aria-hidden="true">›</span>
+        </button>
+      `;
+      li.querySelector("button").addEventListener("click", () => openDetails(app));
+      list.appendChild(li);
+    }
+  </script>
+</body>
+</html>
